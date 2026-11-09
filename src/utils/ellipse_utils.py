@@ -6,7 +6,7 @@ from matplotlib.patches import Circle, Rectangle, Ellipse, FancyArrowPatch
 from matplotlib.lines import Line2D
 from matplotlib.transforms import Affine2D
 
-#constant
+# constants
 M = 5.97 * 10**(24)
 G = 6.67 * 10**(-11)
 
@@ -59,8 +59,8 @@ def get_speed(phi_vals, orbit, h = 1e-6):
 
 class visualize_control():
     def __init__(self, time, phi_vals, orbit, sma, state, u_signal):
-        self.time = time  # Instance attribute
-        self.phi_vals = phi_vals  # Instance attribute
+        self.time = time  
+        self.phi_vals = phi_vals  
         self.orbit = orbit
         self.sma = sma
         self.state = state
