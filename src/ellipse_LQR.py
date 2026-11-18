@@ -48,8 +48,12 @@ time, output, state = ct.input_output_response(clsys, tvec, X0=X_0, return_x=Tru
 phi_vals = get_phi_vals(time)
 
 orbit = [radius(phi) for phi in phi_vals]
-sma = max(orbit)
-print("semi-major axis :", sma, " km")
+sma = radius(np.pi)
+
+print("perigee : ", radius(0)/1000, "km")
+print("apogee : ", radius(np.pi)/1000, "km")
+
+print("semi-latus rectum : ", radius(np.pi/2)/1000, "km")
 
 #by adding the observed phi_sec of the sattelite to the value of control, 
 #we correct the rotation of the sattelite due to the elliptic orbite compared to a cyclic one

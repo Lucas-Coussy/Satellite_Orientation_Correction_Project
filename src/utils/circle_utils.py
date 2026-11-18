@@ -52,16 +52,15 @@ class visualize_control():
         ax.set_aspect('equal'); ax.grid(True)
         ax.set_title("Satellite Attitude Control & Orbit")
 
-        ax.add_patch(Circle((0, 0), 1.0, color='dodgerblue', alpha=0.7))
-        ax.add_patch(Circle((0, 0), R, color='gray', ls='--', fill=False))
+        ax.add_patch(Circle((0, 0), 0.2*R, color='dodgerblue', alpha=0.7))
+        ax.add_patch(Circle((0, 0), R, color='red',lw=2, fill=False))
 
         # Satellite artists (defined around the origin, moved via transforms)
-        sat_body = Rectangle((-0.2*R, -0.2*R), 0, 0, fc='orange', ec='black', zorder=3)
         panel = Line2D([-0.1*R, 0.1*R], [0, 0], color='cornflowerblue', lw=5,
                        solid_capstyle='round', zorder=2)
         # Ghost showing the desired orientation (theta = 0 -> aligned with orbit frame)
         ghost = Line2D([-0.1*R, 0.1*R], [0, 0], color='green', lw=2, ls=':', zorder=1)
-        ax.add_patch(sat_body); ax.add_line(panel); ax.add_line(ghost)
+        ax.add_line(panel); ax.add_line(ghost)
 
         control_text = ax.text(0.55, 0.90, '', transform=ax.transAxes, fontsize=10,
                                bbox=dict(boxstyle='round', facecolor='white',
@@ -69,7 +68,7 @@ class visualize_control():
 
         def init():
             control_text.set_text('')
-            return sat_body, panel, ghost, control_text
+            return panel, ghost, control_text
 
         def animate(i):
             phi = self.phi_vals[i]
@@ -81,18 +80,18 @@ class visualize_control():
             actual = Affine2D().rotate(phi + np.pi/2 + theta).translate(x_pos, y_pos) + ax.transData
             desired = Affine2D().rotate(phi + np.pi/2).translate(x_pos, y_pos) + ax.transData
 
-            sat_body.set_transform(actual)
             panel.set_transform(actual)
             ghost.set_transform(desired)
 
             control_text.set_text(f'u(t) = {self.u_signal[i]: .3f}\n'
                                   f'θ = {np.degrees(theta): .1f}°')
-            return sat_body, panel, ghost, control_text
+            return panel, ghost, control_text
 
         ani = animation.FuncAnimation(fig, animate, init_func=init,
                                       frames=len(self.time), interval=40, blit=False)
 
         writer = animation.FFMpegWriter(fps=25, bitrate=2000)
-        ani.save(f'{self.path}/satellite_cyclic.mp4', writer=writer)
+        # ani.save(f'{self.path}/satellite_cyclic.mp4', writer=writer)
+        ani.save(f'{self.path}/satellite_cyclic.gif', writer=writer)
         plt.close(fig)
-        print("Saved satellite_cyclic.mp4")
+        print("Saved satellite_cyclic.gif")

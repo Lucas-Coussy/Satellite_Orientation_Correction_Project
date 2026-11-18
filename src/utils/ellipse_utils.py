@@ -11,7 +11,8 @@ M = 5.97 * 10**(24)
 G = 6.67 * 10**(-11)
 
 #computed value (see documentation for equation)
-e = (G*M*10**(5))**(1/2) #~10**(-10)
+# e = (G*M*10**(7))**(1/2) #~10**(10) plus réaliste en terme d'axe semi majeur et mineur
+e = (G*M*10**(5))**(1/2) #~10**(9) meilleur pour la visualisation
 s = G*M/(2*e**2)
 
 #compute constant p and ecc of elliptic solution function
@@ -31,16 +32,26 @@ def phi_dot(phi):
 def phi_sec(phi):
     return -2*e*phi_dot(phi)*s*np.sin(phi)*(s*np.cos(phi) + G*M/e**2)
 
+# def get_phi_vals(time):
+#     """
+#     Compute phi_vals for a list of time value recursively by applying euler method.
+#     Beware to take recursion limit into account.
+#     """
+#     if all(time == [0]):
+#         return [0]
+#     else:
+#         phi_vals = get_phi_vals(time[0:-1])
+#         return phi_vals + [(phi_vals[-1] + phi_dot(phi_vals[-1])*(time[-1]-time[-2])) % (2*np.pi)]
+
+
 def get_phi_vals(time):
     """
-    Compute phi_vals for a list of time value recursively by applying euler method.
-    Beware to take recursion limit into account.
+    Compute phi_vals for a list of time value by applying euler method.
     """
-    if all(time == [0]):
-        return [0]
-    else:
-        phi_vals = get_phi_vals(time[0:-1])
-        return phi_vals + [(phi_vals[-1] + phi_dot(phi_vals[-1])*(time[-1]-time[-2])) % (2*np.pi)]
+    phi = np.zeros(len(time))
+    for k in range(1, len(time)):
+        phi[k] = (phi[k-1] + phi_dot(phi[k-1])*(time[k]-time[k-1])) % (2*np.pi)
+    return phi
 
 def get_speed(phi_vals, orbit, h = 1e-6):
     #get phi_value list
@@ -92,7 +103,7 @@ class visualize_control():
 
         ax.add_patch(Circle((0, 0), 0.2*a, color='dodgerblue', alpha=0.7))
 
-        orbit_patch = Ellipse(xy=(-a/2, 0),      # center, not focus
+        orbit_patch = Ellipse(xy=(-a*ecc, 0),      # center, not focus
                             width=2*a,           # full length, hence 2a
                             height=2*b,          # full length, hence 2b
                             angle=0,
@@ -100,12 +111,11 @@ class visualize_control():
         ax.add_patch(orbit_patch)
 
         # Satellite artists (defined around the origin, moved via transforms)
-        sat_body = Rectangle((-0.2*a, -0.2*a), 0, 0, fc='orange', ec='black', zorder=3)
         panel    = Line2D([-0.1*a, 0.1*a], [0, 0], color='cornflowerblue', lw=5,
                         solid_capstyle='round', zorder=2)
         # Ghost showing the desired orientation (theta = 0 -> aligned with orbit frame)
         ghost    = Line2D([-0.1*a, 0.1*a], [0, 0], color='green', lw=2, ls=':', zorder=1)
-        ax.add_patch(sat_body); ax.add_line(panel); ax.add_line(ghost)
+        ax.add_line(panel); ax.add_line(ghost)
 
         tangent = FancyArrowPatch((0, 0), (1, 1), arrowstyle='-|>',
                                 mutation_scale=15, color='purple', lw=2, zorder=4)
@@ -117,7 +127,7 @@ class visualize_control():
 
         def init():
             control_text.set_text('')
-            return sat_body, panel, ghost, tangent, control_text
+            return panel, ghost, tangent, control_text
 
         def animate(i):
             phi   = self.phi_vals[i]
@@ -139,17 +149,17 @@ class visualize_control():
             # update speed vector
             tangent.set_positions((x_pos, y_pos), (x_pos + self.vx[i], y_pos + self.vy[i]))    
 
-            sat_body.set_transform(actual)
             panel.set_transform(actual)
             ghost.set_transform(desired)
 
             control_text.set_text(f'u(t) = {self.u_signal[i]: .3f}\n'
                                 f'θ = {np.degrees(theta): .1f}°')
-            return sat_body, panel, ghost, tangent, control_text
+            return panel, ghost, tangent, control_text
 
         ani = animation.FuncAnimation(fig, animate, init_func=init,
                                     frames=len(self.phi_vals), interval=40, blit=False)
 
         writer = animation.FFMpegWriter(fps=25, bitrate=2000)
-        ani.save(f'{self.path}/satellite_detailed.mp4', writer=writer)
-        print("Saved satellite_detailed.mp4")
+        # ani.save(f'{self.path}/satellite_elliptic.mp4', writer=writer)
+        ani.save(f'{self.path}/satellite_elliptic.gif', writer=writer)
+        print("Saved satellite_elliptic.gif")
