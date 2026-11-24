@@ -7,11 +7,25 @@ For our system, there is only one force that is applied on our satellite which i
 ![](image/physic_context.jpeg) 
 
 Using the image above, we first can observe that the position of our satellite at every moment is 
-$$\begin{equation} \vec{p} = r \cdot \vec{v} \end{equation}$$
+$$
+\begin{equation} 
+\vec{p} = r \cdot \vec{v}
+\end{equation}
+$$
+
 then 
-$$\begin{equation} \vec{vel} = \frac{d\vec{p}}{dt} = \frac{dr}{dt} \cdot \vec{v} + r \cdot \frac{d\vec{v}}{dt} \end{equation} $$
+
+$$\begin{equation} 
+\vec{vel} = \frac{d\vec{p}}{dt} = \frac{dr}{dt} \cdot \vec{v} + r \cdot \frac{d\vec{v}}{dt} 
+\end{equation}
+$$
+
 and 
-$$ \begin{equation} \vec{a} = \frac{d\vec{vel}}{dt} = \frac{d^{2}r}{dt^{2}} \cdot \vec{v} + 2 \frac{dr}{dt} \cdot \frac{d\vec{v}}{dt} + r \cdot \frac{d^{2}\vec{v}}{dt^{2}} \end{equation} $$
+
+$$ 
+\begin{equation} \vec{a} = \frac{d\vec{vel}}{dt} = \frac{d^{2}r}{dt^{2}} \cdot \vec{v} + 2 \frac{dr}{dt} \cdot \frac{d\vec{v}}{dt} + r \cdot \frac{d^{2}\vec{v}}{dt^{2}} 
+\end{equation} 
+$$
 
 but we also know that 
 
@@ -69,7 +83,7 @@ $$
     \end{cases}
 \end{equation}
 $$
-Which we can simplify by dividing by m on both sides of the first equation
+Which we can simplify by dividing by $m$ on both sides of the first equation
 $$ 
 \begin{equation*}
     \begin{cases}
